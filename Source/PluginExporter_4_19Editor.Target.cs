@@ -9,6 +9,6 @@ public class PluginExporter_4_19EditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange( new string[] { "PluginExporter_4_19" } );
+		ExtraModuleNames.AddRange( new string[] { "PluginExporter_4_19"  } );
 	}
 }
