@@ -26,12 +26,31 @@ class DATASTREAMCORE_API UViconClient : public UBlueprintFunctionLibrary
 public:
 
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-		static void GetSDKVersion();
+		static void DataStream_GetSDKVersion();
 
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-		static void DataStreamConnect(FString ServerName, bool& IsConnected);
-	
-	
+		static void DataStream_Connect(FString ServerName, bool& IsConnected);
+
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_CheckConnected(bool& IsConnected);
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetSubjectCount(int32& SubjectCount);
+
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetSubjectName(FString& SubjectName);
+
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_SegmentCount(FString SubjectName);
+
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetMakerGolbalTranslation(FString SubjectName, FString MakerName, FVector& NewLocation);
+
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetMarkerCount(FString SubjectName, int32 &MakerCount);
+
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetLabelMarkerCount();
+
 	
 };
 #define CPP PCPP
