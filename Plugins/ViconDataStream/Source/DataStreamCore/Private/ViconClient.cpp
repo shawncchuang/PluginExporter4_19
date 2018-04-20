@@ -10,9 +10,11 @@ ViconDataStreamSDK::CPP::Output_IsConnected ReIsConnected;
 ViconDataStreamSDK::CPP::Output_GetSubjectName ReSubjectName;
 ViconDataStreamSDK::CPP::Output_GetSubjectCount ReSubjectCount;
 ViconDataStreamSDK::CPP::Output_GetMarkerCount ReMarkerCount;
+ViconDataStreamSDK::CPP::Output_GetMarkerName ReMarkerName;
 ViconDataStreamSDK::CPP::Output_GetMarkerGlobalTranslation ReMarkerTranslation;
 ViconDataStreamSDK::CPP::Output_GetSegmentCount ReSegmentCount;
 ViconDataStreamSDK::CPP::Output_GetLabeledMarkerCount ReLabeledMarkerCount;
+ViconDataStreamSDK::CPP::Output_GetSegmentName ReSegmentName;
 ViconDataStreamSDK::CPP::Output_GetSubjectRootSegmentName ReRootSegmentName;
 
 ViconDataStreamSDK::CPP::Output_GetSegmentLocalTranslation ReSegmentLocalTrasnslation;
@@ -20,7 +22,7 @@ ViconDataStreamSDK::CPP::Output_GetSegmentLocalRotationEulerXYZ ReSegmentLocalRo
 ViconDataStreamSDK::CPP::Output_GetSegmentLocalRotationQuaternion ReSegmentLocalRotationQuaternion;
 
 ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationEulerXYZ ReSegmentGlobalRotationEuler;
-
+ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationQuaternion ReSegmentGlobalRotationQuaternion;
 
 FString ServerAddress;
 bool IsConnected;
@@ -28,7 +30,8 @@ int32  SegmentCount = 0;
 int32  SubjectCount = 0;
 int32 MakerCount = 0;
 FString SubjectName;
-
+FString MarkerName;
+FString SegmentName;
 
 void UViconClient::DataStream_GetSDKVersion()
 {
@@ -64,33 +67,143 @@ void UViconClient::DataStream_GetSubjectCount(int32 &SubjectCount)
 {
 	MyClient.GetFrame();
 	ReSubjectCount = MyClient.GetSubjectCount();
-	if (ReSubjectCount.Result)
+	if (ReSubjectCount.Result == ViconDataStreamSDK::CPP::Result::Success)
 	{
 		SubjectCount = ReSubjectCount.SubjectCount;
 	}
 
 }
 
-void UViconClient::DataStream_GetSubjectName(FString &SubjectName)
+void UViconClient::DataStream_GetSubjectName( int32 Count, TArray<FString> &SubjectNames)
 {
-	ReSubjectName = MyClient.GetSubjectName(0);
-	if (ReSubjectName.Result == ViconDataStreamSDK::CPP::Result::Enum::Success)
+	UE_LOG(LogTemp, Warning, TEXT("Subjects Count : %d"), Count);
+	 
+	for (int32 SubjectIndex = 0 ; SubjectIndex<Count; ++SubjectIndex)
 	{
-		std::string SubjectNameStr =  ReSubjectName.SubjectName;
-	    SubjectName = SubjectNameStr.c_str();
+		 
+		MyClient.GetFrame();
+		ReSubjectName = MyClient.GetSubjectName(SubjectIndex);
+
+		bool ErrorLog = true;
+		FString   result = "GetSubjectName :";
+		std::string SubjectNameStr = "";
+		switch (ReSubjectName.Result)
+		{
+		case  ViconDataStreamSDK::CPP::Result::Success:
+			ErrorLog = false;
+			SubjectNameStr = ReSubjectName.SubjectName;
+			SubjectName = SubjectNameStr.c_str();
+			  
+			SubjectNames.Add(SubjectName);
+			break;
+		case ViconDataStreamSDK::CPP::Result::NotConnected:
+			result += "NotConnected";
+			break;
+		case ViconDataStreamSDK::CPP::Result::NoFrame:
+			result += "NoFrame";
+			break;
+		case ViconDataStreamSDK::CPP::Result::InvalidIndex:
+			result += "InvalidSubjectName";
+			break;
+
+		}
+		if (ErrorLog)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+			return;
+		}
+
 	}
+	
+	
 }
 
-void UViconClient::DataStream_GetMarkerCount(FString SubjectName, int32 &MakerCount)
+void UViconClient::DataStream_GetMarkerCount(FString SubjectName, int32 &MarkerCount)
 {
+
+	std::string _SubjectName = TCHAR_TO_UTF8(*SubjectName);
 	MyClient.GetFrame();
-	ReMarkerCount = MyClient.GetMarkerCount(TCHAR_TO_UTF8(*SubjectName));
-	if (ReMarkerCount.Result == ViconDataStreamSDK::CPP::Result::Enum::Success)
+	ReMarkerCount = MyClient.GetMarkerCount(_SubjectName);
+
+	bool ErrorLog = true;
+	FString   result = "GetMarkerCount :";
+
+	switch (ReMarkerCount.Result)
 	{
-		MakerCount = ReMarkerCount.MarkerCount;
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Maker Count : %d"), MakerCount));
+	case ViconDataStreamSDK::CPP::Result::Success:
+		ErrorLog = false;
+		MarkerCount = ReMarkerCount.MarkerCount;
+		break;
+	case ViconDataStreamSDK::CPP::Result::NoFrame:
+		result += "NoFrame";
+		break;
+	case  ViconDataStreamSDK::CPP::Result::NotConnected:
+		result += "NotConnected";
+		break;
+	case  ViconDataStreamSDK::CPP::Result::InvalidSubjectName:
+		result += "InvalidSubjectName";
+		break;
+
 	}
+
+	if (ErrorLog)
+	{
+		MakerCount = -1;
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+	}
+
+ 
 }
+
+void UViconClient::DataStream_GetMarkerName(FString SubjectName, int32  Count, TArray<FString> &MarkerNames)
+{
+	
+	UE_LOG(LogTemp, Warning, TEXT("Marker Count :  %d"), Count);
+	std::string _SubjectName = TCHAR_TO_UTF8(*SubjectName);
+	 
+	for (int32  MarkIndex  = 0 ; MarkIndex < Count ; ++MarkIndex)
+	{
+		MyClient.GetFrame();
+		ReMarkerName = MyClient.GetMarkerName(_SubjectName, MarkIndex);
+
+		bool ErrorLog = true;
+		FString   result = "GetMarkerName :";
+		std::string _MarkerName = "";
+		switch (ReMarkerName.Result)
+		{
+		case ViconDataStreamSDK::CPP::Result::Success:
+			ErrorLog = false;
+			_MarkerName = ReMarkerName.MarkerName;
+			MarkerName = _MarkerName.c_str();
+
+			MarkerNames.Add(MarkerName);
+			break;
+		case ViconDataStreamSDK::CPP::Result::NoFrame:
+			result += "NoFrame";
+			break;
+		case  ViconDataStreamSDK::CPP::Result::NotConnected:
+			result += "NotConnected";
+			break;
+		case  ViconDataStreamSDK::CPP::Result::InvalidSubjectName:
+			result += "InvalidSubjectName";
+			break;
+		case  ViconDataStreamSDK::CPP::Result::InvalidIndex:
+			result += "InvalidIndex";
+			break;
+		}
+		if (ErrorLog)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+			return;
+		}
+	}
+	
+
+}
+
 
 void UViconClient::DataStream_GetMakerGolbalTranslation(FString SubjectName, FString MarkerName, FVector &NewLocation)
 {
@@ -98,31 +211,48 @@ void UViconClient::DataStream_GetMakerGolbalTranslation(FString SubjectName, FSt
 	std::string _MarkerName = TCHAR_TO_UTF8(*MarkerName);
 	MyClient.GetFrame();
 	ReMarkerTranslation = MyClient.GetMarkerGlobalTranslation(_SubjectName, _MarkerName);
-	if (ReMarkerTranslation.Result == ViconDataStreamSDK::CPP::Result::Enum::Success)
-	{
 
-		 
-		NewLocation.X = ReMarkerTranslation.Translation[0];
+	bool ErrorLog = true;
+	FString   result = "GetMakerGolbalTranslation :";
+
+	switch (ReMarkerTranslation.Result)
+	{
+	case ViconDataStreamSDK::CPP::Result::Success:
+		ErrorLog = false;
+
+		NewLocation.X = ReMarkerTranslation.Translation[0] * -1;
 		NewLocation.Y = ReMarkerTranslation.Translation[1];
 		NewLocation.Z = ReMarkerTranslation.Translation[2];
-
-		FString _Translation = "";
-		for  (double &_value : ReMarkerTranslation.Translation)
+		 /*
+		for (double &_value : ReMarkerTranslation.Translation)
 		{
-			_Translation += "," + FString::SanitizeFloat(_value);
-		} 
+			result += "," + FString::SanitizeFloat(_value);
+		}
+		*/
 
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("GetMarkerGlobalTranslation : %s"), *_Translation));
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("GetMarkerGlobalTranslation : x:%d, y:%d, z:%d"), x,y,z));
+		break;
+	case ViconDataStreamSDK::CPP::Result::NoFrame:
+		result += "NoFrame";
+		break;
+	case  ViconDataStreamSDK::CPP::Result::NotConnected:
+		result += "NotConnected";
+		break;
+	case  ViconDataStreamSDK::CPP::Result::InvalidSubjectName:
+		result += "InvalidSubjectName";
+		break;
+	case  ViconDataStreamSDK::CPP::Result::InvalidMarkerName:
+		result += "InvalidMarkerName";
+		break;
+ 
 	}
-	else if (ReMarkerTranslation.Result == ViconDataStreamSDK::CPP::Result::Enum::NoFrame)
+
+	if (ErrorLog)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GetMarkerGlobalTranslation: No Frame"));
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
 	}
-	else if (ReMarkerTranslation.Result == ViconDataStreamSDK::CPP::Result::Enum::NotConnected)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GetMarkerGlobalTranslation:  NotConnected"));
-	}
+
+	 
 	 
 }
 
@@ -130,30 +260,78 @@ void UViconClient::DataStream_GetLabelMarkerCount()
 {
 
 	ReLabeledMarkerCount = MyClient.GetLabeledMarkerCount();
-	if (ReLabeledMarkerCount.Result == ViconDataStreamSDK::CPP::Result::Enum::Success)
+	if (ReLabeledMarkerCount.Result == ViconDataStreamSDK::CPP::Result::Success)
 	{
 		int32 LabeledMarkerCount = ReLabeledMarkerCount.MarkerCount;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Labeled Marker Count : %d"), LabeledMarkerCount));
+		FString result = "Labeled Marker Count : "+ LabeledMarkerCount;
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+	
 	}
 
 
 }
 
 
-void UViconClient::DataStream_SegmentCount(FString SubjectName)
+void UViconClient::DataStream_SegmentCount(FString SubjectName, int32 &Count)
 {
 
 	ReSegmentCount = MyClient.GetSegmentCount(TCHAR_TO_UTF8(*SubjectName));
 	if (ReSegmentCount.Result == ViconDataStreamSDK::CPP::Result::Enum::Success)
 	{
 	 
-		SegmentCount = ReSegmentCount.SegmentCount;
+		Count = SegmentCount = ReSegmentCount.SegmentCount;
 		
 		UE_LOG(LogTemp, Warning, TEXT("Test :DataStream_SegmentCount : %d"), SegmentCount);
 		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,FString::Printf(TEXT("Segment Count : %d"),SegmentCount));
 	}
 
 }
+
+void UViconClient::DataStream_GetSegmentName(FString SubjectName, int32 Count, TArray<FString> &SegmentNames) {
+
+	MyClient.GetFrame();
+	std::string _SubjectName = TCHAR_TO_UTF8(*SubjectName);
+
+	for (int32 SegmentIndex = 0; SegmentIndex < Count ; ++SegmentIndex)
+	{
+		ReSegmentName = MyClient.GetSegmentName(_SubjectName,SegmentIndex);
+
+		bool ErrorLog = true;
+		FString result = "GetSegmentName = ";
+		std::string _SegmentName;
+		switch (ReSegmentName.Result)
+		{
+		case ViconDataStreamSDK::CPP::Result::Success:
+			ErrorLog = false;
+			_SegmentName = ReSegmentName.SegmentName;
+			SegmentName = _SegmentName.c_str();
+			SegmentNames.Add(SegmentName);
+			break;
+		case ViconDataStreamSDK::CPP::Result::NotConnected:
+			result += "NotConnected";
+			break;
+		case ViconDataStreamSDK::CPP::Result::NoFrame:
+			result += "NoFrame";
+			break;
+		case ViconDataStreamSDK::CPP::Result::InvalidSubjectName:
+			result += "InvalidSubjectName";
+			break;
+		}
+
+		if (ErrorLog)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+		}
+		
+
+	}
+	
+
+
+
+}
+
 
 void UViconClient::DataStream_GetSubjectRootSegmentName(FString SubjectName, FString &SegmentName)
 {
@@ -181,7 +359,7 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
 	case ViconDataStreamSDK::CPP::Result::Success :
 		ErrorLog = false;
 
-		NewLocation.X = ReSegmentLocalTrasnslation.Translation[0];
+		NewLocation.X = ReSegmentLocalTrasnslation.Translation[0] * -1;
 		NewLocation.Y= ReSegmentLocalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentLocalTrasnslation.Translation[2];
 
@@ -216,7 +394,7 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
 
 }
 
-void UViconClient::DataStream_GetSegmentLocalRotationEuler(FString SubjectName, FString SegmentName, FVector &NewRotation)
+void UViconClient::DataStream_GetSegmentLocalRotationEulerXYZ(FString SubjectName, FString SegmentName, FVector &NewRotation)
 {
 	MyClient.GetFrame();
 	std::string _SubjectName = TCHAR_TO_UTF8(*SubjectName);
@@ -284,13 +462,13 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 		NewRotation.Y = ReSegmentLocalRotationQuaternion.Rotation[1];
 		NewRotation.Z = ReSegmentLocalRotationQuaternion.Rotation[2];
 
-
+		/*
 		for (double &value : ReSegmentLocalRotationQuaternion.Rotation)
 		{
 			result += ", " + FString::SanitizeFloat(value);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
-
+		*/
 		break;
 	case ViconDataStreamSDK::CPP::Result::NotConnected:
 		result += "NotConnected";
@@ -336,13 +514,13 @@ void UViconClient::DataStream_GetSegmentGlobalRotationEulerXYZ(FString SubjectNa
 		NewRotation.Y = ReSegmentGlobalRotationEuler.Rotation[1];
 		NewRotation.Z = ReSegmentGlobalRotationEuler.Rotation[2];
 
-
+		/*
 		for (double &value : ReSegmentGlobalRotationEuler.Rotation)
 		{
 			result += ", " + FString::SanitizeFloat(value);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
-
+		*/
 		break;
 	case ViconDataStreamSDK::CPP::Result::NotConnected:
 		result += "NotConnected";
@@ -366,6 +544,59 @@ void UViconClient::DataStream_GetSegmentGlobalRotationEulerXYZ(FString SubjectNa
 	}
 
 }
+
+void UViconClient::DataStream_GetSegmentGlobalRotationQuaternion(FString SubjectName, FString SegmentName , FVector  &NewRotation)
+{
+
+	MyClient.GetFrame();
+	std::string _SubjectName = TCHAR_TO_UTF8(*SubjectName);
+	std::string _SegmentName = TCHAR_TO_UTF8(*SegmentName);
+
+	ReSegmentGlobalRotationQuaternion = MyClient.GetSegmentGlobalRotationQuaternion(_SubjectName, _SegmentName);
+
+	bool ErrorLog = true;
+	FString   result = "Segment Global Rotation_Quaternion :";
+
+	switch (ReSegmentGlobalRotationQuaternion.Result)
+	{
+	case ViconDataStreamSDK::CPP::Result::Success:
+		ErrorLog = false;
+
+		NewRotation.X = ReSegmentGlobalRotationQuaternion.Rotation[0];
+		NewRotation.Y = ReSegmentGlobalRotationQuaternion.Rotation[1];
+		NewRotation.Z = ReSegmentGlobalRotationQuaternion.Rotation[2];
+
+		/*
+		for (double &value : ReSegmentGlobalRotationQuaternion.Rotation)
+		{
+		result += ", " + FString::SanitizeFloat(value);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		*/
+		break;
+	case ViconDataStreamSDK::CPP::Result::NotConnected:
+		result += "NotConnected";
+		break;
+	case ViconDataStreamSDK::CPP::Result::NoFrame:
+		result += "NoFrame";
+		break;
+	case ViconDataStreamSDK::CPP::Result::InvalidSubjectName:
+		result += "InvalidSubjectName";
+		break;
+	case ViconDataStreamSDK::CPP::Result::InvalidSegmentName:
+		result += "InvalidSegmentName";
+		break;
+
+	}
+	if (ErrorLog)
+	{
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+	}
+
+}
+
 
 void UViconClient::DebugMessage(FString Message)
 {

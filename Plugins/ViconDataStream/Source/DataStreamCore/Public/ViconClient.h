@@ -37,32 +37,38 @@ public:
 			static void DataStream_CheckConnected(bool& IsConnected);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSubjectCount(int32& SubjectCount);
-
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_GetSubjectName(FString& SubjectName);
+			static void DataStream_GetSubjectName( int32 Count , TArray<FString>& SubjectNames);
 
 		
 		/* DataStream Marker */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetMakerGolbalTranslation(FString SubjectName, FString MakerName, FVector& NewLocation);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_GetMarkerCount(FString SubjectName, int32 &MakerCount);
+			static void DataStream_GetMarkerCount(FString SubjectName, int32 &MarkerCount);
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetMarkerName(FString SubjectName, int32  Count, TArray<FString>& MarkerNames);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetLabelMarkerCount();
 
+
 		/* DataStream Segment */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_SegmentCount(FString SubjectName);
+			static void DataStream_SegmentCount(FString SubjectName, int32 & Count);
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetSegmentName(FString SubjectName, int32  Count, TArray<FString>& SegmentNames);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSubjectRootSegmentName(FString SubjectName, FString& RootSegmentName);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSegmentLocalTranslation(FString SubjectName, FString SegementName, FVector& NewLocaroin);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_GetSegmentLocalRotationEuler(FString SubjectName, FString SegmentName, FVector& NewRotation);
+			static void DataStream_GetSegmentLocalRotationEulerXYZ(FString SubjectName, FString SegmentName, FVector& NewRotation);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSegmentLocalRotationQuaternion(FString SubjectName, FString SegmentName, FVector& NewRotation);
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSegmentGlobalRotationEulerXYZ(FString SubjectName, FString SegmentName, FVector& NewRotation);
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetSegmentGlobalRotationQuaternion(FString SubjectName, FString SegmentName, FVector& NewRotation);
 
 private :
 	UFUNCTION()
