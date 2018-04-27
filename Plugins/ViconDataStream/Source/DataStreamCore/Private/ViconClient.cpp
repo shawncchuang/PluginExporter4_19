@@ -42,8 +42,10 @@ int32 MakerCount = 0;
 FString SubjectName;
 FString MarkerName;
 FString SegmentName;
- 
-
+int32  OnCentimeters = 10;
+//Default Axis   X-Right , Y- Forward and Z-UP , UE4 Left-Hand of axis and Z-UP;
+int32  PitchOffsets = 180;
+int32  XYOffsets = -1;
 
 void UViconClient::DataStream_GetSDKVersion()
 {
@@ -262,7 +264,7 @@ void UViconClient::DataStream_GetMarkerGolbalTranslation(FString SubjectName, FS
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewLocation.X = ReMarkerTranslation.Translation[0];
+		NewLocation.X = ReMarkerTranslation.Translation[0] * XYOffsets;
 		NewLocation.Y = ReMarkerTranslation.Translation[1];
 		NewLocation.Z = ReMarkerTranslation.Translation[2];
 		 /*
@@ -398,7 +400,7 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
 	case ViconDataStreamSDK::CPP::Result::Success :
 		ErrorLog = false;
 
-		NewLocation.X = ReSegmentLocalTrasnslation.Translation[0];
+		NewLocation.X = ReSegmentLocalTrasnslation.Translation[0] * XYOffsets;
 		NewLocation.Y= ReSegmentLocalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentLocalTrasnslation.Translation[2];
 
@@ -447,7 +449,7 @@ void UViconClient::DataStream_GetSegmentGlobalTranslation(FString SubjectName, F
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewLocation.X = ReSegmentGlobalTrasnslation.Translation[0];
+		NewLocation.X = ReSegmentGlobalTrasnslation.Translation[0] * XYOffsets;
 		NewLocation.Y = ReSegmentGlobalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentGlobalTrasnslation.Translation[2];
 
@@ -498,9 +500,9 @@ void UViconClient::DataStream_GetSegmentLocalRotationEulerXYZ(FString SubjectNam
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentLocalRotationEuler.Rotation[0];
-		NewRotation.Y = ReSegmentLocalRotationEuler.Rotation[1];
-		NewRotation.Z = ReSegmentLocalRotationEuler.Rotation[2];
+		NewRotation.X = ReSegmentLocalRotationEuler.Rotation[0] * OnCentimeters;
+		NewRotation.Y = ReSegmentLocalRotationEuler.Rotation[1] * OnCentimeters + PitchOffsets;
+		NewRotation.Z = ReSegmentLocalRotationEuler.Rotation[2] * OnCentimeters;
 
 		/*
 		for (double &value : ReSegmentLocalRotationEuler.Rotation)
@@ -547,9 +549,9 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentLocalRotationQuaternion.Rotation[0];
-		NewRotation.Y = ReSegmentLocalRotationQuaternion.Rotation[1];
-		NewRotation.Z = ReSegmentLocalRotationQuaternion.Rotation[2];
+		NewRotation.X = ReSegmentLocalRotationQuaternion.Rotation[0] * OnCentimeters;
+		NewRotation.Y = ReSegmentLocalRotationQuaternion.Rotation[1] * OnCentimeters + PitchOffsets;
+		NewRotation.Z = ReSegmentLocalRotationQuaternion.Rotation[2] * OnCentimeters;
 
 		/*
 		for (double &value : ReSegmentLocalRotationQuaternion.Rotation)
@@ -599,9 +601,9 @@ void UViconClient::DataStream_GetSegmentGlobalRotationEulerXYZ(FString SubjectNa
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentGlobalRotationEuler.Rotation[0];
-		NewRotation.Y = ReSegmentGlobalRotationEuler.Rotation[1];
-		NewRotation.Z = ReSegmentGlobalRotationEuler.Rotation[2];
+		NewRotation.X = ReSegmentGlobalRotationEuler.Rotation[0] * OnCentimeters;
+		NewRotation.Y = ReSegmentGlobalRotationEuler.Rotation[1] * OnCentimeters + PitchOffsets;
+		NewRotation.Z = ReSegmentGlobalRotationEuler.Rotation[2] * OnCentimeters;
 
 		/*
 		for (double &value : ReSegmentGlobalRotationEuler.Rotation)
@@ -651,9 +653,9 @@ void UViconClient::DataStream_GetSegmentGlobalRotationQuaternion(FString Subject
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentGlobalRotationQuaternion.Rotation[0];
-		NewRotation.Y = ReSegmentGlobalRotationQuaternion.Rotation[1];
-		NewRotation.Z = ReSegmentGlobalRotationQuaternion.Rotation[2];
+		NewRotation.X = ReSegmentGlobalRotationQuaternion.Rotation[0] * OnCentimeters;
+		NewRotation.Y = ReSegmentGlobalRotationQuaternion.Rotation[1] * OnCentimeters + PitchOffsets;
+		NewRotation.Z = ReSegmentGlobalRotationQuaternion.Rotation[2] * OnCentimeters;
 
 		/*
 		for (double &value : ReSegmentGlobalRotationQuaternion.Rotation)
@@ -702,9 +704,9 @@ void UViconClient::DataStream_GetSegmentGlobalRotationHelical(FString SubjectNam
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
-		NewRotation.X = ReSegmentGlobalRotationHelical.Rotation[0];
-		NewRotation.Y = ReSegmentGlobalRotationHelical.Rotation[1];
-		NewRotation.Z = ReSegmentGlobalRotationHelical.Rotation[2];
+		NewRotation.X = ReSegmentGlobalRotationHelical.Rotation[0] * OnCentimeters;
+		NewRotation.Y = ReSegmentGlobalRotationHelical.Rotation[1] * OnCentimeters + PitchOffsets;
+		NewRotation.Z = ReSegmentGlobalRotationHelical.Rotation[2] * OnCentimeters;
 
  
 		for (double &value : ReSegmentGlobalRotationHelical.Rotation)
@@ -753,9 +755,9 @@ void UViconClient::DataStream_GetSegmentLocalRotationHelical(FString SubjectName
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
-		NewRotation.X = ReSegmentLocalRotationHelical.Rotation[0];
-		NewRotation.Y = ReSegmentLocalRotationHelical.Rotation[1];
-		NewRotation.Z = ReSegmentLocalRotationHelical.Rotation[2];
+		NewRotation.X = ReSegmentLocalRotationHelical.Rotation[0] * OnCentimeters;
+		NewRotation.Y = ReSegmentLocalRotationHelical.Rotation[1] * OnCentimeters + PitchOffsets;
+		NewRotation.Z = ReSegmentLocalRotationHelical.Rotation[2] * OnCentimeters;
 
 
 		for (double &value : ReSegmentLocalRotationHelical.Rotation)

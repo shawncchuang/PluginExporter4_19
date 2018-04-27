@@ -22,13 +22,11 @@ UCLASS()
 class DATASTREAMCORE_API UViconClient : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
-	
+
+		
 
 public:
 
-		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = ViconDataStream)
-		FString DataStreamServerName;
 
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 		static void DataStream_GetSDKVersion();
@@ -112,6 +110,7 @@ public:
 			static void DataStream_GetSegmentGlobalRotationHelical(FString SubjectName, FString  SegmentName, FVector& NewRotation);
 	
 private :
+ 
 	UFUNCTION()
 		void DebugMessage(FString Message);
 	 
