@@ -44,13 +44,15 @@ public:
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_CheckConnected(bool& IsConnected);
 
+		/*
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vicon")
 			TMap<FString, bool> AxisMapping;
+			*/
 		
 		/** Vicon Data uses a right-handed coordinate system, with +X forward, +Y left, and +Z up. Other systems use different coordinate systems.
 		Common usages are Z-up: SetAxisMapping( Forward, Left, Up) Y-up: SetAxisMapping( Forward, Up, Right )*/
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_SetAxisMapping(TMap<FString, bool> AxisMapping);
+			static void DataStream_AxisMapping(bool AxisMapping);
 
 		/** Return the number of subjects in the DataStream. This information can be used in conjunction with GetSubjectName.*/
 		UFUNCTION(BlueprintCallable, Category = "Vicon")

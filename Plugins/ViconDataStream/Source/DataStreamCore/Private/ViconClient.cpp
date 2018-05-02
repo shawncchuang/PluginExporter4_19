@@ -55,8 +55,8 @@ FString MarkerName;
 FString SegmentName;
 int32  OnCentimeters = 10;
 //Default Axis   X-Right , Y- Forward and Z-UP , UE4 Left-Hand of axis and Z-UP;
-int32  PitchOffsets = 180;
-int32  XYOffsets = -1;
+int32  PitchOffsets = 0;
+int32  XYOffsets = 1;
 
 void UViconClient::DataStream_Setting(bool EnableSegmentData, bool EnableMarkerData, bool EnableUnlabeledMarkerData,
 	bool  EnableMarkerRayData, bool EnableDeviceData, bool EnableCentroidData,
@@ -108,7 +108,7 @@ void UViconClient::DataStream_CheckConnected(bool &IsConnected)
  
 }
 
-void UViconClient::DataStream_SetAxisMapping(TMap<FString, bool> AxisMapping)
+void UViconClient::DataStream_AxisMapping(bool AxisMapping)
 {
 	 
  
