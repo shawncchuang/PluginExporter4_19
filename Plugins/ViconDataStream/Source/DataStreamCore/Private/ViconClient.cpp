@@ -33,9 +33,20 @@ ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationQuaternion ReSegmentGlob
 ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationHelical ReSegmentGlobalRotationHelical;
 ViconDataStreamSDK::CPP::Output_GetSegmentLocalRotationHelical ReSegmentLocalRotationHelical;
 
+
+bool _EnableSegmentData;
+bool _EnableMarkerData;
+bool _EnableUnlabeledMarkerData;
+bool _EnableMarkerRayData;
+bool _EnableDeviceData;
+bool _EnableCentroidData;
+bool _EnableGreyscaleData;
+bool _EnableVideoData;
+bool _EnableDebugData;
+bool _IsConnected;
+bool _LevelAxis;
+
 FString ServerAddress;
-bool IsConnected;
-bool UnrealEngineAxis;
 int32  SegmentCount = 0;
 int32  SubjectCount = 0;
 int32 MakerCount = 0;
@@ -47,16 +58,35 @@ int32  OnCentimeters = 10;
 int32  PitchOffsets = 180;
 int32  XYOffsets = -1;
 
-void UViconClient::DataStream_GetSDKVersion()
+void UViconClient::DataStream_Setting(bool EnableSegmentData, bool EnableMarkerData, bool EnableUnlabeledMarkerData,
+	bool  EnableMarkerRayData, bool EnableDeviceData, bool EnableCentroidData,
+	bool EnableGreyscaleData, bool EnableVideoData, bool EnableDebugData)
+{
+
+	_EnableSegmentData = EnableSegmentData;
+	_EnableMarkerData = EnableMarkerData;
+	_EnableUnlabeledMarkerData = EnableUnlabeledMarkerData;
+	_EnableMarkerRayData = EnableMarkerRayData;
+	_EnableDeviceData = EnableDeviceData;
+	_EnableCentroidData = EnableCentroidData;
+	_EnableGreyscaleData = EnableGreyscaleData;
+	_EnableVideoData = EnableVideoData;
+	_EnableDebugData = EnableDebugData;
+
+
+}
+
+void UViconClient::DataStream_GetSDKVersion(bool ShowLogOnSreen)
 {
 
 	
 	CurrentVersion = MyClient.GetVersion();
-	float  _CurrentVersionMajor = CurrentVersion.Major;
-	float _CurrentVersionPoint = CurrentVersion.Point;
-	float _CurrentVersion = _CurrentVersionMajor + _CurrentVersionPoint;
+	int32  _CurrentVersionMajor = CurrentVersion.Major;
+	int32 _CurrentVersionPoint = CurrentVersion.Point;
+	FString  _CurrentVersion = FString::FromInt(_CurrentVersionMajor) + "." + FString::FromInt(_CurrentVersionPoint);
 	//UE_LOG(LogTemp, Warning, TEXT("Test :ViconDataStramSDK Version: %f"), _CurrentVersion);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ViconDataStramSDK Version : %f"), _CurrentVersion));
+	if(ShowLogOnSreen)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ViconDataStramSDK Version : %s"), *_CurrentVersion));
 }
 
 void UViconClient::DataStream_Connect(FString ServerName, bool &IsConnected)
@@ -78,11 +108,11 @@ void UViconClient::DataStream_CheckConnected(bool &IsConnected)
  
 }
 
-void UViconClient::DataStream_AxisMapping(bool UEAxis)
+void UViconClient::DataStream_SetAxisMapping(TMap<FString, bool> AxisMapping)
 {
-	UnrealEngineAxis = UEAxis;
-	if (UnrealEngineAxis) {
-		// Return  LeftHandedAxes ; SDK did not support Axis in Unreal Engine
+	 
+ 
+		// Return  LeftHandedAxis ; DataStream SDK did not support the axis with X-Forward, Y-Right, Z-Up  in Unreal Engine
 		ReSetAxisMapping  = MyClient.SetAxisMapping(ViconDataStreamSDK::CPP::Direction::Forward,
 			ViconDataStreamSDK::CPP::Direction::Right,
 			ViconDataStreamSDK::CPP::Direction::Up);
@@ -96,7 +126,7 @@ void UViconClient::DataStream_AxisMapping(bool UEAxis)
 		if (ReSetAxisMapping.Result == ViconDataStreamSDK::CPP::Result::LeftHandedAxes) {
 			UE_LOG(LogTemp, Warning, TEXT("Set Axis Mapping LeftHandedAxes"));
 		}
-	}
+ 
  
 	ReGetAxisMapping = MyClient.GetAxisMapping();
 	int32 XAxis = ReGetAxisMapping.XAxis;
