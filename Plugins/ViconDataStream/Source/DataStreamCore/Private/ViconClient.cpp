@@ -295,8 +295,9 @@ void UViconClient::DataStream_GetMarkerGolbalTranslation(FString SubjectName, FS
 		ErrorLog = false;
 
 		NewLocation.X = ReMarkerTranslation.Translation[0] * XYOffsets;
-		NewLocation.Y = ReMarkerTranslation.Translation[1];
-		NewLocation.Z = ReMarkerTranslation.Translation[2];
+		NewLocation.Y = ReMarkerTranslation.Translation[1] ;
+		NewLocation.Z = ReMarkerTranslation.Translation[2] ;
+		 
 		 /*
 		for (double &_value : ReMarkerTranslation.Translation)
 		{
@@ -433,7 +434,7 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
 		NewLocation.X = ReSegmentLocalTrasnslation.Translation[0] * XYOffsets;
 		NewLocation.Y= ReSegmentLocalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentLocalTrasnslation.Translation[2];
-
+		 
 		/*
 		for (double &value : ReSegmentLocalTrasnslation.Translation)
 		{
@@ -482,7 +483,7 @@ void UViconClient::DataStream_GetSegmentGlobalTranslation(FString SubjectName, F
 		NewLocation.X = ReSegmentGlobalTrasnslation.Translation[0] * XYOffsets;
 		NewLocation.Y = ReSegmentGlobalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentGlobalTrasnslation.Translation[2];
-
+		 
 		/*
 		for (double &value : ReSegmentLocalTrasnslation.Translation)
 		{
@@ -530,10 +531,13 @@ void UViconClient::DataStream_GetSegmentLocalRotationEulerXYZ(FString SubjectNam
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentLocalRotationEuler.Rotation[0] * OnCentimeters;
-		NewRotation.Y = ReSegmentLocalRotationEuler.Rotation[1] * OnCentimeters + PitchOffsets;
-		NewRotation.Z = ReSegmentLocalRotationEuler.Rotation[2] * OnCentimeters;
+		NewRotation.X = ReSegmentLocalRotationEuler.Rotation[0] * XYOffsets;
+		NewRotation.Y = ReSegmentLocalRotationEuler.Rotation[1] + PitchOffsets;
+		NewRotation.Z = ReSegmentLocalRotationEuler.Rotation[2] * XYOffsets;
 
+		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
+		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
+		NewRotation.Z= FMath::RadiansToDegrees(NewRotation.Z);
 		/*
 		for (double &value : ReSegmentLocalRotationEuler.Rotation)
 		{
@@ -579,9 +583,13 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentLocalRotationQuaternion.Rotation[0] * OnCentimeters;
-		NewRotation.Y = ReSegmentLocalRotationQuaternion.Rotation[1] * OnCentimeters + PitchOffsets;
-		NewRotation.Z = ReSegmentLocalRotationQuaternion.Rotation[2] * OnCentimeters;
+		NewRotation.X = ReSegmentLocalRotationQuaternion.Rotation[0] * XYOffsets;
+		NewRotation.Y = ReSegmentLocalRotationQuaternion.Rotation[1] + PitchOffsets;
+		NewRotation.Z = ReSegmentLocalRotationQuaternion.Rotation[2] * XYOffsets;
+		 
+		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
+		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
+		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z);
 
 		/*
 		for (double &value : ReSegmentLocalRotationQuaternion.Rotation)
@@ -631,10 +639,14 @@ void UViconClient::DataStream_GetSegmentGlobalRotationEulerXYZ(FString SubjectNa
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentGlobalRotationEuler.Rotation[0] * OnCentimeters;
-		NewRotation.Y = ReSegmentGlobalRotationEuler.Rotation[1] * OnCentimeters + PitchOffsets;
-		NewRotation.Z = ReSegmentGlobalRotationEuler.Rotation[2] * OnCentimeters;
-
+		NewRotation.X = ReSegmentGlobalRotationEuler.Rotation[0] * XYOffsets;
+		NewRotation.Y = ReSegmentGlobalRotationEuler.Rotation[1] + PitchOffsets;
+		NewRotation.Z = ReSegmentGlobalRotationEuler.Rotation[2] *  XYOffsets;
+		
+		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
+		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
+		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z); 
+	 
 		/*
 		for (double &value : ReSegmentGlobalRotationEuler.Rotation)
 		{
@@ -683,9 +695,13 @@ void UViconClient::DataStream_GetSegmentGlobalRotationQuaternion(FString Subject
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentGlobalRotationQuaternion.Rotation[0] * OnCentimeters;
-		NewRotation.Y = ReSegmentGlobalRotationQuaternion.Rotation[1] * OnCentimeters + PitchOffsets;
-		NewRotation.Z = ReSegmentGlobalRotationQuaternion.Rotation[2] * OnCentimeters;
+		NewRotation.X = ReSegmentGlobalRotationQuaternion.Rotation[0] * XYOffsets;
+		NewRotation.Y = ReSegmentGlobalRotationQuaternion.Rotation[1] + PitchOffsets;
+		NewRotation.Z = ReSegmentGlobalRotationQuaternion.Rotation[2] * XYOffsets;
+		 
+		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
+		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
+		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z);
 
 		/*
 		for (double &value : ReSegmentGlobalRotationQuaternion.Rotation)
@@ -734,17 +750,22 @@ void UViconClient::DataStream_GetSegmentGlobalRotationHelical(FString SubjectNam
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
-		NewRotation.X = ReSegmentGlobalRotationHelical.Rotation[0] * OnCentimeters;
-		NewRotation.Y = ReSegmentGlobalRotationHelical.Rotation[1] * OnCentimeters + PitchOffsets;
-		NewRotation.Z = ReSegmentGlobalRotationHelical.Rotation[2] * OnCentimeters;
+		NewRotation.X = ReSegmentGlobalRotationHelical.Rotation[0] * XYOffsets;
+		NewRotation.Y = ReSegmentGlobalRotationHelical.Rotation[1] + PitchOffsets;
+		NewRotation.Z = ReSegmentGlobalRotationHelical.Rotation[2]  * XYOffsets;
+	 
 
+		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
+		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
+		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z);
+		/*
  
 		for (double &value : ReSegmentGlobalRotationHelical.Rotation)
 		{
 		result += ", " + FString::SanitizeFloat(value);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
-		 
+		 */
 
 
 		break;
@@ -785,17 +806,20 @@ void UViconClient::DataStream_GetSegmentLocalRotationHelical(FString SubjectName
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
-		NewRotation.X = ReSegmentLocalRotationHelical.Rotation[0] * OnCentimeters;
-		NewRotation.Y = ReSegmentLocalRotationHelical.Rotation[1] * OnCentimeters + PitchOffsets;
-		NewRotation.Z = ReSegmentLocalRotationHelical.Rotation[2] * OnCentimeters;
-
-
+		NewRotation.X = ReSegmentLocalRotationHelical.Rotation[0] * XYOffsets;
+		NewRotation.Y = ReSegmentLocalRotationHelical.Rotation[1] + PitchOffsets;
+		NewRotation.Z = ReSegmentLocalRotationHelical.Rotation[2] * XYOffsets;
+ 
+		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
+		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
+		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z);
+		/*
 		for (double &value : ReSegmentLocalRotationHelical.Rotation)
 		{
 			result += ", " + FString::SanitizeFloat(value);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
-
+		*/
 
 
 		break;
@@ -828,8 +852,7 @@ void UViconClient::DebugMessage(FString Message)
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *Message));
 }
-
-
+ 
 
  
  
