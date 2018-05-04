@@ -39,7 +39,12 @@ public:
 		/** The function defaults to connecting on port 801. You can specify an alternate port number after a colon.
 		This is for future compatibility : current products serve data on port 801 only. */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-		static void DataStream_Connect(FString ServerName, bool& IsConnected);
+		static void DataStream_Connect(FString ServerName);
+
+		/** Disconnect from the Vicon DataStream Server.*/
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_Disconnect();
+
 		/** Discover whether client is connected to the Vicon DataStream Server. */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_CheckConnected(bool& IsConnected);

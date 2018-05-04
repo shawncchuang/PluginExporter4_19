@@ -6,7 +6,9 @@
 
 
 ViconDataStreamSDK::CPP::Client MyClient;
+
 ViconDataStreamSDK::CPP::Output_GetVersion CurrentVersion;
+ViconDataStreamSDK::CPP::Output_Connect ReConnect;
 ViconDataStreamSDK::CPP::Output_IsConnected ReIsConnected;
 ViconDataStreamSDK::CPP::Output_SetAxisMapping ReSetAxisMapping;
 ViconDataStreamSDK::CPP::Output_GetAxisMapping ReGetAxisMapping;
@@ -101,13 +103,35 @@ void UViconClient::DataStream_GetSDKVersion(FString &SDKVersion)
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ViconDataStramSDK Version : %s"), *_CurrentVersion));
 }
 
-void UViconClient::DataStream_Connect(FString ServerName, bool &IsConnected)
+void UViconClient::DataStream_Connect(FString ServerName)
 {
 	ServerAddress = ServerName;
-	MyClient.Connect(TCHAR_TO_UTF8(*ServerName));
-	ReIsConnected = MyClient.IsConnected();
-	IsConnected = ReIsConnected.Connected;
+	ReConnect = MyClient.Connect(TCHAR_TO_UTF8(*ServerName));
 
+	bool ErrorLog = true;
+	FString   result = "Call Connect :";
+	switch (ReConnect.Result)
+	{
+	case ViconDataStreamSDK::CPP::Result::Success:
+		ErrorLog = false;
+		result += "Success";
+		break;
+	case ViconDataStreamSDK::CPP::Result::InvalidHostName:
+		result += "InvalidHostName";
+		break;
+	case ViconDataStreamSDK::CPP::Result::ClientAlreadyConnected:
+		result += "ClientAlreadyConnected";
+		break;
+	case ViconDataStreamSDK::CPP::Result::ClientConnectionFailed:
+		result += "ClientConnectionFailed";
+		break;
+	}
+	if (ErrorLog)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+		return;
+	}
 
 
 	if (_EnableSegmentData) { MyClient.EnableSegmentData(); }
@@ -130,10 +154,14 @@ void UViconClient::DataStream_Connect(FString ServerName, bool &IsConnected)
 	else { MyClient.DisableVideoData(); }
 
 
+}
 
-
+void UViconClient::DataStream_Disconnect()
+{
+	MyClient.Disconnect();
 
 }
+
 void UViconClient::DataStream_CheckConnected(bool &IsConnected)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("ViconDataStram Connected: %s"), *ServerAddress);
