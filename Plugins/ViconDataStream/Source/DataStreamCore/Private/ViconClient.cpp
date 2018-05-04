@@ -34,19 +34,23 @@ ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationHelical ReSegmentGlobalR
 ViconDataStreamSDK::CPP::Output_GetSegmentLocalRotationHelical ReSegmentLocalRotationHelical;
 
 
-bool _EnableSegmentData;
-bool _EnableMarkerData;
-bool _EnableUnlabeledMarkerData;
-bool _EnableMarkerRayData;
-bool _EnableDeviceData;
-bool _EnableCentroidData;
-bool _EnableGreyscaleData;
-bool _EnableVideoData;
-bool _EnableDebugData;
-bool _IsConnected;
-bool _LevelAxis;
+bool _EnableSegmentData = false;
+bool _EnableMarkerData = false;
+bool _EnableUnlabeledMarkerData = false;
+bool _EnableMarkerRayData = false;
+bool _EnableDeviceData = false;
+bool _EnableCentroidData = false;
+bool _EnableGreyscaleData = false;
+bool _EnableVideoData = false;
+bool _EnableDebugData = false;
+bool _IsConnected = false;
+bool OutputLog = false;
+bool OutputScreen = false;
+ 
+TMap<FString, bool>AxisMappingSetting;
 
 FString ServerAddress;
+FString SDKVersion;
 int32  SegmentCount = 0;
 int32  SubjectCount = 0;
 int32 MakerCount = 0;
@@ -58,9 +62,13 @@ int32  OnCentimeters = 10;
 int32  PitchOffsets = 0;
 int32  XYOffsets = -1;
 
+ 
+ 
+//Add(TEXT("+X forward, +Y left, and +Z up"), true);
+
 void UViconClient::DataStream_Setting(bool EnableSegmentData, bool EnableMarkerData, bool EnableUnlabeledMarkerData,
 	bool  EnableMarkerRayData, bool EnableDeviceData, bool EnableCentroidData,
-	bool EnableGreyscaleData, bool EnableVideoData, bool EnableDebugData)
+	bool EnableGreyscaleData, bool EnableVideoData, bool EnableDebugData, bool UnrealEngineAxisStyle)
 {
 
 	_EnableSegmentData = EnableSegmentData;
@@ -74,19 +82,23 @@ void UViconClient::DataStream_Setting(bool EnableSegmentData, bool EnableMarkerD
 	_EnableDebugData = EnableDebugData;
 
 
+	AxisMappingSetting.Add(TEXT("FLZ"), UnrealEngineAxisStyle);
+
+	if (UnrealEngineAxisStyle)
+		XYOffsets = -1;
+
 }
 
-void UViconClient::DataStream_GetSDKVersion(bool ShowLogOnSreen)
+void UViconClient::DataStream_GetSDKVersion(FString &SDKVersion)
 {
 
 	
 	CurrentVersion = MyClient.GetVersion();
 	int32  _CurrentVersionMajor = CurrentVersion.Major;
 	int32 _CurrentVersionPoint = CurrentVersion.Point;
-	FString  _CurrentVersion = FString::FromInt(_CurrentVersionMajor) + "." + FString::FromInt(_CurrentVersionPoint);
+	SDKVersion = FString::FromInt(_CurrentVersionMajor) + "." + FString::FromInt(_CurrentVersionPoint);
 	//UE_LOG(LogTemp, Warning, TEXT("Test :ViconDataStramSDK Version: %f"), _CurrentVersion);
-	if(ShowLogOnSreen)
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ViconDataStramSDK Version : %s"), *_CurrentVersion));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ViconDataStramSDK Version : %s"), *_CurrentVersion));
 }
 
 void UViconClient::DataStream_Connect(FString ServerName, bool &IsConnected)
@@ -95,9 +107,32 @@ void UViconClient::DataStream_Connect(FString ServerName, bool &IsConnected)
 	MyClient.Connect(TCHAR_TO_UTF8(*ServerName));
 	ReIsConnected = MyClient.IsConnected();
 	IsConnected = ReIsConnected.Connected;
-	MyClient.EnableSegmentData();
-	MyClient.EnableMarkerData();
-	
+
+
+
+	if (_EnableSegmentData) { MyClient.EnableSegmentData(); }
+	else { MyClient.DisableSegmentData(); }
+	if (_EnableMarkerData) { MyClient.EnableMarkerData(); }
+	else { MyClient.DisableMarkerData(); }
+	if (_EnableUnlabeledMarkerData) { MyClient.EnableUnlabeledMarkerData(); }
+	else { MyClient.DisableUnlabeledMarkerData(); }
+	if (_EnableMarkerRayData) { MyClient.EnableMarkerRayData(); }
+	else { MyClient.DisableMarkerRayData(); }
+	if (_EnableDeviceData) { MyClient.EnableDeviceData(); }
+	else { MyClient.DisableDeviceData(); }
+	if (_EnableCentroidData) { MyClient.EnableCentroidData(); }
+	else { MyClient.DisableCentroidData(); }
+	if (_EnableGreyscaleData) { MyClient.EnableGreyscaleData(); }
+	else { MyClient.DisableCentroidData(); }
+	if (_EnableVideoData) { MyClient.EnableVideoData(); }
+	else { MyClient.DisableVideoData(); }
+	if (_EnableDebugData) { MyClient.EnableDebugData(); }
+	else { MyClient.DisableVideoData(); }
+
+
+
+
+
 }
 void UViconClient::DataStream_CheckConnected(bool &IsConnected)
 {

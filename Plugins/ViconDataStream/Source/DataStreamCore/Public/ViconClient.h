@@ -30,11 +30,11 @@ public:
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 		static void DataStream_Setting(bool EnableSegmentData, bool EnableMarkerData, bool EnableUnlabeledMarkerData,
 																bool  EnableMarkerRayData, bool EnableDeviceData, bool EnableCentroidData,
-																bool EnableGreyscaleData, bool EnableVideoData, bool EnableDebugData);
+																bool EnableGreyscaleData, bool EnableVideoData, bool EnableDebugData, bool UnrealEngineAxisStyle);
 
 		/** Get the version of the Vicon DataStream SDK. */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-		static void DataStream_GetSDKVersion(bool ShowLogOnSreen);
+		static void DataStream_GetSDKVersion(FString& SDKVersion);
 
 		/** The function defaults to connecting on port 801. You can specify an alternate port number after a colon.
 		This is for future compatibility : current products serve data on port 801 only. */
@@ -43,11 +43,7 @@ public:
 		/** Discover whether client is connected to the Vicon DataStream Server. */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_CheckConnected(bool& IsConnected);
-
-		/*
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vicon")
-			TMap<FString, bool> AxisMapping;
-			*/
+	
 		
 		/** Vicon Data uses a right-handed coordinate system, with +X forward, +Y left, and +Z up. Other systems use different coordinate systems.
 		Common usages are Z-up: SetAxisMapping( Forward, Left, Up) Y-up: SetAxisMapping( Forward, Up, Right )*/
