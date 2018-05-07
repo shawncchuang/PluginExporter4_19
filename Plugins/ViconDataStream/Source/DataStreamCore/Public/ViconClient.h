@@ -11,6 +11,8 @@
 
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
+#include "Runtime/Core/Public/Math/Vector.h"
+#include "Runtime/Core/Public/Math/Quat.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ViconClient.generated.h"

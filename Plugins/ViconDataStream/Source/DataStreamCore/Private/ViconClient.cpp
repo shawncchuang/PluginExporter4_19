@@ -601,13 +601,16 @@ void UViconClient::DataStream_GetSegmentLocalRotationEulerXYZ(FString SubjectNam
 		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
 		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
 		NewRotation.Z= FMath::RadiansToDegrees(NewRotation.Z);
+		
 		/*
 		for (double &value : ReSegmentLocalRotationEuler.Rotation)
 		{
 		result += ", "+FString::SanitizeFloat(value);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
 		*/
+		result += NewRotation.ToString();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		
 		break;
 	case ViconDataStreamSDK::CPP::Result::NotConnected:
 		result += "NotConnected";
@@ -640,27 +643,36 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 
 	bool ErrorLog = true;
 	FString   result = "Segment Local Rotation_Quaternion :";
-
+	float QuatW;
+	float QuatX;
+	float QuatY;
+	float QuatZ;
 	switch (ReSegmentLocalRotationQuaternion.Result)
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
-
-		NewRotation.X = ReSegmentLocalRotationQuaternion.Rotation[0] * XYOffsets;
-		NewRotation.Y = ReSegmentLocalRotationQuaternion.Rotation[1] + PitchOffsets;
-		NewRotation.Z = ReSegmentLocalRotationQuaternion.Rotation[2] * XYOffsets;
 		 
-		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
-		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
-		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z);
-
+		 
+		
+		QuatW = ReSegmentLocalRotationQuaternion.Rotation[0];
+		QuatX = ReSegmentLocalRotationQuaternion.Rotation[1] ;
+		QuatY = ReSegmentLocalRotationQuaternion.Rotation[2] + PitchOffsets;
+		QuatZ = ReSegmentLocalRotationQuaternion.Rotation[3] ;
+	 
+		NewRotation = FQuat(QuatW, QuatX, QuatY, QuatZ).Euler();
+		 
+		NewRotation.Y *= XYOffsets;
+		NewRotation.Z *= XYOffsets;
 		/*
 		for (double &value : ReSegmentLocalRotationQuaternion.Rotation)
 		{
 			result += ", " + FString::SanitizeFloat(value);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
 		*/
+		result += NewRotation.ToString();
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+	
+ 
 		break;
 	case ViconDataStreamSDK::CPP::Result::NotConnected:
 		result += "NotConnected";
@@ -752,19 +764,25 @@ void UViconClient::DataStream_GetSegmentGlobalRotationQuaternion(FString Subject
 
 	bool ErrorLog = true;
 	FString   result = "Segment Global Rotation_Quaternion :";
-
+	float QuatW;
+	float QuatX;
+	float QuatY;
+	float QuatZ;
 	switch (ReSegmentGlobalRotationQuaternion.Result)
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
 
-		NewRotation.X = ReSegmentGlobalRotationQuaternion.Rotation[0] * XYOffsets;
-		NewRotation.Y = ReSegmentGlobalRotationQuaternion.Rotation[1] + PitchOffsets;
-		NewRotation.Z = ReSegmentGlobalRotationQuaternion.Rotation[2] * XYOffsets;
+
+		QuatW = ReSegmentLocalRotationQuaternion.Rotation[0];
+		QuatX = ReSegmentLocalRotationQuaternion.Rotation[1];
+		QuatY = ReSegmentLocalRotationQuaternion.Rotation[2] + PitchOffsets;
+		QuatZ = ReSegmentLocalRotationQuaternion.Rotation[3];
 		 
-		NewRotation.X = FMath::RadiansToDegrees(NewRotation.X);
-		NewRotation.Y = FMath::RadiansToDegrees(NewRotation.Y);
-		NewRotation.Z = FMath::RadiansToDegrees(NewRotation.Z);
+		NewRotation = FQuat(QuatW, QuatX, QuatY, QuatZ).Euler();
+
+		NewRotation.Y *= XYOffsets;
+		NewRotation.Z *= XYOffsets;
 
 		/*
 		for (double &value : ReSegmentGlobalRotationQuaternion.Rotation)
