@@ -61,6 +61,11 @@ public:
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSubjectCount(int32& SubjectCount);
 
+		/** Return the translation of a labeled marker in global coordinates.
+		The Translation is of the form ( x, y, z ) where x, y and z are in millimeters with respect to the global origin.*/
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetLabeledMarkerTranslation(TArray<FVector>& MarkersLocation);
+
 		/** Return the name of a subject. This can be passed into segment and marker functions.*/
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSubjectName( int32 Count , TArray<FString>& SubjectNames);
@@ -71,7 +76,7 @@ public:
 			static void DataStream_GetMarkerGolbalTranslation(FString SubjectName, FString MakerName, FVector& NewLocation);
 		/** Return the number of markers for a specified subject in the DataStream. This information can be used in conjunction with GetMarkerName. */
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_GetMarkerCount(FString SubjectName, int32 &MarkerCount);
+			static void DataStream_GetMarkerCount(FString SubjectName, int32& MarkerCount);
 		/** Return the name of a marker for a specified subject. This can be passed into GetMarkerGlobalTranslation.*/
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetMarkerName(FString SubjectName, int32  Count, TArray<FString>& MarkerNames);
@@ -124,14 +129,18 @@ public:
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
 			static void DataStream_GetSegmentGlobalRotationHelical(FString SubjectName, FString  SegmentName, FVector& NewRotation);
 	
-
+		/** Return the total latency in seconds introduced at various stages of the real-time pipeline.
+		If no latency information is available then all latencies will be reported as 0.0.*/
+		UFUNCTION(BlueprintCallable, Category = "Vicon")
+			static void DataStream_GetLatencyTotal(float& Latency);
 
 		
 private :
  
+	 
 	UFUNCTION()
-		void DebugMessage(FString Message);
-
+	void DebugMessage(FString Message);
+	 
 
  
 	 

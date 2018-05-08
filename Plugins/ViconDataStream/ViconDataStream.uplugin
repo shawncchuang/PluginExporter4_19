@@ -1,26 +1,36 @@
 {
-  "FileVersion" : 3,
-  "FriendlyName" : "Vicon DataStream",
-  "Version" : 6,
-  "VersionName" : "1.5",
-  "CreatedBy" : "Vicon Motion Systems Ltd",
-  "CreatedByURL" : "http://www.vicon.com",
-  "EngineVersion" : "4.19.0",
-  "Description" : "Interface to the Vicon DataStream SDK through an animation node to drive skeletons directly",
-  "Category" : "Retargeting",
-  "EnabledByDefault" : true,
-  
-  "Modules" :
-  [
-    {
-      "Name" : "DataStreamCore",
-      "Type" : "Runtime",
-      "LoadingPhase" : "PreDefault"
-    },
-    {
-      "Name" : "DataStreamEditor",
-      "Type" : "Developer",
-      "LoadingPhase" : "PreDefault"
-    }
-  ]
+	"FileVersion": 3,
+	"Version": 6,
+	"VersionName": "1.8.1",
+	"FriendlyName": "Vicon DataStream",
+	"Description": "Interface to the Vicon DataStream SDK through an animation node to drive skeletons directly",
+	"Category": "Retargeting",
+	"CreatedBy": "Shawn & Vicon Motion Systems Ltd",
+	"CreatedByURL": "http://www.vicon.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EngineVersion": "4.19.0",
+	"EnabledByDefault": true,
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+        {
+            "Name": "DataStreamCore",
+            "Type": "Runtime",
+            "LoadingPhase": "PreDefault",
+            "WhitelistPlatforms": [
+                "Win64"
+            ]
+        },
+        {
+            "Name": "DataStreamEditor",
+            "Type": "Runtime",
+            "LoadingPhase": "PreDefault",
+            "WhitelistPlatforms": [
+                "Win64"
+            ]
+        }
+	]
 }

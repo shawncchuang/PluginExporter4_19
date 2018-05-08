@@ -20,6 +20,7 @@ ViconDataStreamSDK::CPP::Output_GetMarkerName ReMarkerName;
 ViconDataStreamSDK::CPP::Output_GetMarkerGlobalTranslation ReMarkerTranslation;
 ViconDataStreamSDK::CPP::Output_GetSegmentCount ReSegmentCount;
 ViconDataStreamSDK::CPP::Output_GetLabeledMarkerCount ReLabeledMarkerCount;
+ViconDataStreamSDK::CPP::Output_GetLabeledMarkerGlobalTranslation ReLabeledMarkerTranslation;
 ViconDataStreamSDK::CPP::Output_GetSegmentName ReSegmentName;
 ViconDataStreamSDK::CPP::Output_GetSubjectRootSegmentName ReRootSegmentName;
 
@@ -34,6 +35,8 @@ ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationQuaternion ReSegmentGlob
 
 ViconDataStreamSDK::CPP::Output_GetSegmentGlobalRotationHelical ReSegmentGlobalRotationHelical;
 ViconDataStreamSDK::CPP::Output_GetSegmentLocalRotationHelical ReSegmentLocalRotationHelical;
+
+ViconDataStreamSDK::CPP::Output_GetLatencyTotal ReLatency;
 
 
 bool _EnableSegmentData = false;
@@ -55,7 +58,8 @@ FString ServerAddress;
 FString SDKVersion;
 int32  SegmentCount = 0;
 int32  SubjectCount = 0;
-int32 MakerCount = 0;
+int32  MakerCount = 0;
+int32  LabeledMarkerCount = 0;
 FString SubjectName;
 FString MarkerName;
 FString SegmentName;
@@ -400,12 +404,37 @@ void UViconClient::DataStream_GetLabelMarkerCount()
 	ReLabeledMarkerCount = MyClient.GetLabeledMarkerCount();
 	if (ReLabeledMarkerCount.Result == ViconDataStreamSDK::CPP::Result::Success)
 	{
-		int32 LabeledMarkerCount = ReLabeledMarkerCount.MarkerCount;
+		 LabeledMarkerCount = ReLabeledMarkerCount.MarkerCount;
 		FString result = "Labeled Marker Count : "+ LabeledMarkerCount;
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
 	
 	}
+}
 
+void UViconClient::DataStream_GetLabeledMarkerTranslation(TArray <FVector> &MarkersLocation)
+{
+	MyClient.GetFrame();
+	TArray <FVector> _MarkersLocation;
+	FVector  NewLocation;
+	ReLabeledMarkerCount = MyClient.GetLabeledMarkerCount();
+	if (ReLabeledMarkerCount.Result == ViconDataStreamSDK::CPP::Result::Success)
+	{
+		LabeledMarkerCount = ReLabeledMarkerCount.MarkerCount;
+		for (int32 MarkerIndex = 0; MarkerIndex < LabeledMarkerCount ; MarkerIndex++)
+		{
+			ReLabeledMarkerTranslation = MyClient.GetLabeledMarkerGlobalTranslation(MarkerIndex);
+			if (ReLabeledMarkerTranslation.Result == ViconDataStreamSDK::CPP::Result::Success) {
+
+				NewLocation.X = ReLabeledMarkerTranslation.Translation[0] * XYOffsets;
+				NewLocation.Y = ReLabeledMarkerTranslation.Translation[1];
+				NewLocation.Z = ReLabeledMarkerTranslation.Translation[2];
+
+				_MarkersLocation.Add(NewLocation);
+			}
+		}
+		MarkersLocation = _MarkersLocation;
+		
+	}
 
 }
 
@@ -925,8 +954,48 @@ void UViconClient::DataStream_GetSegmentLocalRotationHelical(FString SubjectName
 	}
 }
 
+void UViconClient::DataStream_GetLatencyTotal(float &Latency)
+{
+
+	MyClient.GetFrame();
+	ReLatency = MyClient.GetLatencyTotal();
+
+	bool ErrorLog = true;
+	FString   result = "Latency Total :";
+	FString LatencyTotalStr = "";
+	
+	double LatencyTotal = 0.0;
+	switch (ReLatency.Result)
+	{
+	case ViconDataStreamSDK::CPP::Result::Success:
+		ErrorLog = false;
+		result += "Success";
+		LatencyTotal = ReLatency.Total;
+		LatencyTotalStr = FString::SanitizeFloat(LatencyTotal);
+		Latency = FCString::Atof(*LatencyTotalStr);
+
+		//result += LatencyTotalStr;
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		break;
+	case ViconDataStreamSDK::CPP::Result::NotConnected:
+		result += "NotConnected";
+		break;
+	case ViconDataStreamSDK::CPP::Result::NoFrame:
+		result += "NoFrame";
+		break;
+ 
+	}
+	if (ErrorLog)
+	{
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *result));
+	}
+}
 
 
+
+ 
 void UViconClient::DebugMessage(FString Message)
 {
 
@@ -934,6 +1003,7 @@ void UViconClient::DebugMessage(FString Message)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%s"), *Message));
 }
  
+
 
  
  
