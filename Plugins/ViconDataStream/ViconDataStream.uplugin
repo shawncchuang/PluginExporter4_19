@@ -5,7 +5,7 @@
 	"FriendlyName": "Vicon DataStream",
 	"Description": "Interface to the Vicon DataStream SDK through an animation node to drive skeletons directly",
 	"Category": "Retargeting",
-	"CreatedBy": "Shawn & Vicon Motion Systems Ltd",
+	"CreatedBy": "NextLab",
 	"CreatedByURL": "http://www.vicon.com",
 	"DocsURL": "",
 	"MarketplaceURL": "",
@@ -14,23 +14,23 @@
 	"EnabledByDefault": true,
 	"CanContainContent": false,
 	"IsBetaVersion": false,
-	"Installed": false,
+	"Installed": true,
 	"Modules": [
-        {
-            "Name": "DataStreamCore",
-            "Type": "Runtime",
-            "LoadingPhase": "PreDefault",
-            "WhitelistPlatforms": [
-                "Win64"
-            ]
-        },
-        {
-            "Name": "DataStreamEditor",
-            "Type": "Runtime",
-            "LoadingPhase": "PreDefault",
-            "WhitelistPlatforms": [
-                "Win64"
-            ]
-        }
+		{
+			"Name": "DataStreamCore",
+			"Type": "Developer",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "DataStreamEditor",
+			"Type": "Developer",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
+		}
 	]
 }
