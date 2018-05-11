@@ -83,7 +83,7 @@ public:
 		/** Returns the number of all labeled markers in the data stream across all subjects.
 		This may be used to determine marker index range for use with GetLabeledMarkerGlobalTranslation().*/
 		UFUNCTION(BlueprintCallable, Category = "Vicon")
-			static void DataStream_GetLabelMarkerCount();
+			static void DataStream_GetLabelMarkerCount(int32& LabeledMarkerCount);
 
 
 		/** Return the number of segments for a specified subject in the DataStream.
@@ -141,7 +141,22 @@ private :
 	UFUNCTION()
 	void DebugMessage(FString Message);
 	 
-
+	//Float as String With Precision!
+	static FORCEINLINE FString GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero = true)
+	{
+		//Round to integral if have something like 1.9999 within precision
+		float Rounded = roundf(TheFloat);
+		if (FMath::Abs(TheFloat - Rounded) < FMath::Pow(10, -1 * Precision))
+		{
+			TheFloat = Rounded;
+		}
+		FNumberFormattingOptions NumberFormat;					//Text.h
+		NumberFormat.MinimumIntegralDigits = (IncludeLeadingZero) ? 1 : 0;
+		NumberFormat.MaximumIntegralDigits = 10000;
+		NumberFormat.MinimumFractionalDigits = Precision;
+		NumberFormat.MaximumFractionalDigits = Precision;
+		return FText::AsNumber(TheFloat, &NumberFormat).ToString();
+	}
  
 	 
 

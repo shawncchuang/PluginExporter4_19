@@ -225,6 +225,7 @@ void UViconClient::DataStream_GetSubjectName( int32 Count, TArray<FString> &Subj
 		MyClient.GetFrame();
 		ReSubjectName = MyClient.GetSubjectName(SubjectIndex);
 
+		SubjectNames.Empty();
 		bool ErrorLog = true;
 		FString   result = "GetSubjectName :";
 		std::string SubjectNameStr = "";
@@ -266,7 +267,7 @@ void UViconClient::DataStream_GetMarkerCount(FString SubjectName, int32 &MarkerC
 	std::string _SubjectName = TCHAR_TO_UTF8(*SubjectName);
 	MyClient.GetFrame();
 	ReMarkerCount = MyClient.GetMarkerCount(_SubjectName);
-
+	
 	bool ErrorLog = true;
 	FString   result = "GetMarkerCount :";
 
@@ -398,7 +399,7 @@ void UViconClient::DataStream_GetMarkerGolbalTranslation(FString SubjectName, FS
 	 
 }
 
-void UViconClient::DataStream_GetLabelMarkerCount()
+void UViconClient::DataStream_GetLabelMarkerCount(int32 &LabeledMarkerCount)
 {
 
 	ReLabeledMarkerCount = MyClient.GetLabeledMarkerCount();
@@ -416,10 +417,16 @@ void UViconClient::DataStream_GetLabeledMarkerTranslation(TArray <FVector> &Mark
 	MyClient.GetFrame();
 	TArray <FVector> _MarkersLocation;
 	FVector  NewLocation;
+	FString LocXStr;
+	FString LocYStr;
+	FString LocZStr;
+
 	ReLabeledMarkerCount = MyClient.GetLabeledMarkerCount();
+ 
 	if (ReLabeledMarkerCount.Result == ViconDataStreamSDK::CPP::Result::Success)
 	{
 		LabeledMarkerCount = ReLabeledMarkerCount.MarkerCount;
+		
 		for (int32 MarkerIndex = 0; MarkerIndex < LabeledMarkerCount ; MarkerIndex++)
 		{
 			ReLabeledMarkerTranslation = MyClient.GetLabeledMarkerGlobalTranslation(MarkerIndex);
@@ -428,6 +435,13 @@ void UViconClient::DataStream_GetLabeledMarkerTranslation(TArray <FVector> &Mark
 				NewLocation.X = ReLabeledMarkerTranslation.Translation[0] * XYOffsets;
 				NewLocation.Y = ReLabeledMarkerTranslation.Translation[1];
 				NewLocation.Z = ReLabeledMarkerTranslation.Translation[2];
+
+				LocXStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.X, 2, false);
+				NewLocation.X = FCString::Atof(*LocXStr);
+				LocYStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Y, 2, false);
+				NewLocation.Y = FCString::Atof(*LocYStr);
+				LocZStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Z, 2, false);
+				NewLocation.Z = FCString::Atof(*LocZStr);
 
 				_MarkersLocation.Add(NewLocation);
 			}
@@ -518,6 +532,11 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
  
 	bool ErrorLog = true;
 	FString   result = "Segment Local Translation :";
+
+	FString LocXStr;
+	FString LocYStr;
+	FString LocZStr;
+
 	switch (ReSegmentLocalTrasnslation.Result)
 	{
 	case ViconDataStreamSDK::CPP::Result::Success :
@@ -526,7 +545,13 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
 		NewLocation.X = ReSegmentLocalTrasnslation.Translation[0] * XYOffsets;
 		NewLocation.Y= ReSegmentLocalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentLocalTrasnslation.Translation[2];
-		 
+
+		LocXStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.X, 2, false);
+		NewLocation.X = FCString::Atof(*LocXStr);
+		LocYStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Y, 2, false);
+		NewLocation.Y = FCString::Atof(*LocYStr);
+		LocZStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Z, 2, false);
+		NewLocation.Z = FCString::Atof(*LocZStr);
 		/*
 		for (double &value : ReSegmentLocalTrasnslation.Translation)
 		{
@@ -676,22 +701,38 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 	float QuatX;
 	float QuatY;
 	float QuatZ;
+	FString QuatWStr;
+	FString QuatXStr;
+    FString QuatYStr;
+	FString QuatZStr;
 	switch (ReSegmentLocalRotationQuaternion.Result)
 	{
 	case ViconDataStreamSDK::CPP::Result::Success:
 		ErrorLog = false;
-		 
-		 
-		
+	
 		QuatW = ReSegmentLocalRotationQuaternion.Rotation[0];
 		QuatX = ReSegmentLocalRotationQuaternion.Rotation[1] ;
 		QuatY = ReSegmentLocalRotationQuaternion.Rotation[2] + PitchOffsets;
 		QuatZ = ReSegmentLocalRotationQuaternion.Rotation[3] ;
-	 
-		NewRotation = FQuat(QuatW, QuatX, QuatY, QuatZ).Euler();
 		 
+ 
+		
+
+		NewRotation = FQuat(QuatW, QuatX, QuatY, QuatZ).Euler();
+ 
 		NewRotation.Y *= XYOffsets;
 		NewRotation.Z *= XYOffsets;
+
+		 
+		QuatXStr = UViconClient::GetFloatAsStringWithPrecision(NewRotation.X, 2, false);
+		NewRotation.X = FCString::Atof(*QuatXStr);
+		QuatYStr = UViconClient::GetFloatAsStringWithPrecision(NewRotation.Y, 2, false);
+		NewRotation.Y = FCString::Atof(*QuatYStr);
+		QuatZStr = UViconClient::GetFloatAsStringWithPrecision(NewRotation.Z, 2, false);
+		NewRotation.Z = FCString::Atof(*QuatZStr);
+	 
+ 
+
 		/*
 		for (double &value : ReSegmentLocalRotationQuaternion.Rotation)
 		{
@@ -699,7 +740,7 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 		}
 		*/
 		result += NewRotation.ToString();
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
 	
  
 		break;
@@ -807,7 +848,7 @@ void UViconClient::DataStream_GetSegmentGlobalRotationQuaternion(FString Subject
 		QuatX = ReSegmentLocalRotationQuaternion.Rotation[1];
 		QuatY = ReSegmentLocalRotationQuaternion.Rotation[2] + PitchOffsets;
 		QuatZ = ReSegmentLocalRotationQuaternion.Rotation[3];
-		 
+		
 		NewRotation = FQuat(QuatW, QuatX, QuatY, QuatZ).Euler();
 
 		NewRotation.Y *= XYOffsets;
