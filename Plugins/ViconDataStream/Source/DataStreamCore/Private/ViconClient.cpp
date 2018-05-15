@@ -111,6 +111,7 @@ void UViconClient::DataStream_Connect(FString ServerName)
 {
 	ServerAddress = ServerName;
 	ReConnect = MyClient.Connect(TCHAR_TO_UTF8(*ServerName));
+	MyClient.SetStreamMode(ViconDataStreamSDK::CPP::StreamMode::ClientPullPreFetch);
 
 	bool ErrorLog = true;
 	FString   result = "Call Connect :";
@@ -546,19 +547,25 @@ void UViconClient::DataStream_GetSegmentLocalTranslation(FString SubjectName, FS
 		NewLocation.Y= ReSegmentLocalTrasnslation.Translation[1];
 		NewLocation.Z = ReSegmentLocalTrasnslation.Translation[2];
 
+		/*
 		LocXStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.X, 2, false);
 		NewLocation.X = FCString::Atof(*LocXStr);
 		LocYStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Y, 2, false);
 		NewLocation.Y = FCString::Atof(*LocYStr);
 		LocZStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Z, 2, false);
 		NewLocation.Z = FCString::Atof(*LocZStr);
-		/*
+		*/
+	   /*
 		for (double &value : ReSegmentLocalTrasnslation.Translation)
 		{
 			result += ", "+FString::SanitizeFloat(value);
 		}
+	
+		result += NewLocation.ToString();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
-		*/
+	 	*/
+
+
 		break;
 	case ViconDataStreamSDK::CPP::Result::NotConnected:
 		result += "NotConnected";
@@ -716,21 +723,19 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 		QuatZ = ReSegmentLocalRotationQuaternion.Rotation[3] ;
 		 
  
-		
-
 		NewRotation = FQuat(QuatW, QuatX, QuatY, QuatZ).Euler();
  
 		NewRotation.Y *= XYOffsets;
 		NewRotation.Z *= XYOffsets;
 
-		 
+		 /*
 		QuatXStr = UViconClient::GetFloatAsStringWithPrecision(NewRotation.X, 2, false);
 		NewRotation.X = FCString::Atof(*QuatXStr);
 		QuatYStr = UViconClient::GetFloatAsStringWithPrecision(NewRotation.Y, 2, false);
 		NewRotation.Y = FCString::Atof(*QuatYStr);
 		QuatZStr = UViconClient::GetFloatAsStringWithPrecision(NewRotation.Z, 2, false);
 		NewRotation.Z = FCString::Atof(*QuatZStr);
-	 
+	 */
  
 
 		/*
@@ -738,10 +743,10 @@ void UViconClient::DataStream_GetSegmentLocalRotationQuaternion(FString SubjectN
 		{
 			result += ", " + FString::SanitizeFloat(value);
 		}
-		*/
+		
 		result += NewRotation.ToString();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *result);
-	
+		*/
  
 		break;
 	case ViconDataStreamSDK::CPP::Result::NotConnected:
