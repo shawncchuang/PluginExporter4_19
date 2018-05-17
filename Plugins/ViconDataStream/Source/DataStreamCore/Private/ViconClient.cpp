@@ -437,12 +437,14 @@ void UViconClient::DataStream_GetLabeledMarkerTranslation(TArray <FVector> &Mark
 				NewLocation.Y = ReLabeledMarkerTranslation.Translation[1];
 				NewLocation.Z = ReLabeledMarkerTranslation.Translation[2];
 
+				/*
 				LocXStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.X, 2, false);
 				NewLocation.X = FCString::Atof(*LocXStr);
 				LocYStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Y, 2, false);
 				NewLocation.Y = FCString::Atof(*LocYStr);
 				LocZStr = UViconClient::GetFloatAsStringWithPrecision(NewLocation.Z, 2, false);
 				NewLocation.Z = FCString::Atof(*LocZStr);
+				*/
 
 				_MarkersLocation.Add(NewLocation);
 			}
