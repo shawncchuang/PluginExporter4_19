@@ -98,7 +98,7 @@ void UViconClient::DataStream_Setting(bool EnableSegmentData, bool EnableMarkerD
 void UViconClient::DataStream_GetSDKVersion(FString &SDKVersion)
 {
 
-	
+
 	CurrentVersion = MyClient.GetVersion();
 	int32  _CurrentVersionMajor = CurrentVersion.Major;
 	int32 _CurrentVersionPoint = CurrentVersion.Point;
